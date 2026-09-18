@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background-color: #F6F5F3;
+  background-image:
+    radial-gradient(ellipse 70% 45% at 12% -10%, rgba(195, 31, 38, 0.06), transparent 60%),
+    radial-gradient(ellipse 55% 35% at 100% 10%, rgba(20, 20, 20, 0.04), transparent 55%),
+    linear-gradient(rgba(20, 20, 20, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 20, 20, 0.028) 1px, transparent 1px);
+  background-size: auto, auto, 44px 44px, 44px 44px;
+  background-attachment: fixed;
+}
+
+.panel-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E4E1DB;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
+    0 10px 24px -18px rgba(20, 20, 20, 0.25);
+  position: relative;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.panel-card:hover {
+  border-color: rgba(195, 31, 38, 0.35);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.7),
+    0 0 0 1px rgba(195, 31, 38, 0.06),
+    0 16px 32px -18px rgba(20, 20, 20, 0.28),
+    0 0 20px -8px rgba(195, 31, 38, 0.18);
+}
+
+.glow-dot {
+  box-shadow: 0 0 0 3px rgba(195, 31, 38, 0.14), 0 0 12px 1px rgba(195, 31, 38, 0.55);
+}
+
+.gradient-heading {
+  background: linear-gradient(120deg, #161616 0%, #161616 60%, #C31F26 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+::selection {
+  background-color: rgba(195, 31, 38, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #C31F26;
+  outline-offset: 2px;
+}
+
+.heading-top {
+  font-size: 2.6rem;
+  line-height: 1.15;
+  margin-bottom: 0.9rem;
+}
