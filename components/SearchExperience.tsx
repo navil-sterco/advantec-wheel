@@ -8,12 +8,19 @@ import TypewriterText from "./TypewriterText";
 
 type Status = "idle" | "loading" | "streaming" | "done" | "error";
 
-const BLOCK_STAGGER_MS = 550;
+const BLOCK_STAGGER_MS = 420;
 const STARTER_CHIPS = [
-  "How could I buy?",
-  "What wheel size fits Celerio?",
-  "Kohinoor px series price list",
-  "Find wheel dealers near me",
+  "Find a wheel for my car",
+  "What size fits Celerio?",
+  "Show Kohinoor PX pricing",
+  "Find dealers near me",
+];
+
+const DISCOVER = [
+  ["FITMENT", "Find wheels for your car"],
+  ["SIZES", "Explore sizes & bolt patterns"],
+  ["PRICING", "Check catalogue pricing"],
+  ["DEALERS", "Locate a trusted dealer"],
 ];
 
 export default function SearchExperience() {
@@ -25,34 +32,21 @@ export default function SearchExperience() {
   const [answerDone, setAnswerDone] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  const clearTimers = () => {
-    timers.current.forEach(clearTimeout);
-    timers.current = [];
-  };
-
+  const clearTimers = () => { timers.current.forEach(clearTimeout); timers.current = []; };
   useEffect(() => () => clearTimers(), []);
 
   async function runSearch(query: string) {
     clearTimers();
-    setStatus("loading");
-    setData(null);
-    setVisibleBlocks(0);
-    setAnswerDone(false);
-    setErrorMsg("");
-
+    setStatus("loading"); setData(null); setVisibleBlocks(0); setAnswerDone(false); setErrorMsg("");
     try {
       const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
       const json = await res.json();
-
       if (!res.ok || !json.status) {
         setErrorMsg(json.error || "Something went wrong fetching results.");
-        setStatus("error");
-        return;
+        setStatus("error"); return;
       }
-
-      setData(json.data);
-      setStatus("streaming");
-    } catch (err) {
+      setData(json.data); setStatus("streaming");
+    } catch {
       setErrorMsg("Could not reach the search service. Please try again.");
       setStatus("error");
     }
@@ -72,122 +66,102 @@ export default function SearchExperience() {
 
   function submitQuery(query: string) {
     if (!query.trim() || status === "loading" || status === "streaming") return;
-    setInputValue(query);
-    runSearch(query.trim());
+    setInputValue(query); runSearch(query.trim());
   }
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    submitQuery(inputValue);
-  }
+  function handleSubmit(e: React.FormEvent) { e.preventDefault(); submitQuery(inputValue); }
 
   const isBusy = status === "loading" || status === "streaming";
-  const chips =
-    status === "done" && data?.suggested_queries?.length
-      ? data.suggested_queries
-      : STARTER_CHIPS;
+  const chips = status === "done" && data?.suggested_queries?.length ? data.suggested_queries : STARTER_CHIPS;
 
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="flex-1 overflow-y-auto px-5 sm:px-10 py-10 sm:py-14 pb-44">
-        <div className="max-w-3xl mx-auto">
-          {status === "idle" && (
-            <div className="text-center pt-16 sm:pt-24">
-              <span className="inline-flex items-center gap-2 text-[10.5px] font-mono uppercase tracking-[0.16em] text-red border border-red/30 bg-redsoft rounded-full px-3 py-1.5">
-                AI-Powered Wheel Assistant
-              </span>
-              <h1 className="font-display text-heading mt-4 font-semibold heading-top">
-                Ask anything about alloy wheels
-              </h1>
-              <p className="text-muted text-sm mt-1 max-w-md mx-auto">
-                Sizes, bolt patterns, pricing, finishes, or your nearest dealer — get instant
-                AI-curated answers from the Advantec Wheels catalogue.
-              </p>
+    <section className="relative z-10 px-5 sm:px-10 lg:px-14 pb-14">
+      <div className="mx-auto max-w-7xl">
+        {status === "idle" && (
+          <div className="mb-8">
+            <div className="search-shell max-w-4xl">
+              <form onSubmit={handleSubmit} className="flex items-center gap-3 p-2.5">
+                <div className="pl-4 text-white/35 text-[32px] font-[300]" aria-hidden="true">⌕</div>
+                <input
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Ask anything about wheels, fitment, price or dealers…"
+                  disabled={isBusy}
+                  className="min-w-0 flex-1 bg-transparent px-1 py-4 text-[15px] sm:text-base text-white placeholder:text-white/30 focus:outline-none"
+                />
+                <button type="submit" disabled={!inputValue.trim()} className="search-button">
+                  <span className="hidden sm:inline">Search catalogue</span><span className="sm:hidden">Search</span>
+                  <span>↗</span>
+                </button>
+              </form>
             </div>
-          )}
-
-          {status === "loading" && (
-            <div>
-              <div className="mb-6">
-                <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-amber/70">
-                  Searching
-                </p>
-                <h1 className="font-display text-2xl sm:text-3xl text-heading mt-1 font-medium">
-                  &ldquo;{inputValue}&rdquo;
-                </h1>
-              </div>
-              <Loader />
+            <div className="mt-4 flex flex-wrap gap-2">
+              {chips.map((chip) => (
+                <button key={chip} onClick={() => submitQuery(chip)} disabled={isBusy} className="prompt-chip">{chip}</button>
+              ))}
             </div>
-          )}
+          </div>
+        )}
 
-          {status === "error" && (
-            <div className="panel-card rounded-xl px-8 py-8">
-              <p className="font-mono text-[12px] uppercase tracking-widest text-amber mb-2">
-                Couldn&apos;t finish that search
-              </p>
-              <p className="text-[14px] text-body">{errorMsg}</p>
+        {status === "loading" && (
+          <div className="max-w-4xl">
+            <div className="mb-5">
+              <p className="eyebrow">Searching catalogue</p>
+              <h2 className="mt-2 font-display text-2xl sm:text-3xl font-medium text-white">“{inputValue}”</h2>
             </div>
-          )}
+            <Loader />
+          </div>
+        )}
 
-          {data && (status === "streaming" || status === "done") && (
-            <div>
-              <header className="mb-8 animate-inkReveal">
-                <h1 className="font-display text-3xl sm:text-4xl gradient-heading font-medium">
-                  {data.title}
-                </h1>
-                <p className="text-amber/80 text-[13px] font-mono uppercase tracking-[0.14em] mt-2">
-                  {data.subtitle}
-                </p>
-                <div className="mt-4 max-w-2xl">
-                  <TypewriterText
-                    text={data.answer}
-                    onDone={handleAnswerDone}
-                    className="text-[15px] leading-relaxed text-body"
-                  />
-                </div>
-              </header>
+        {status === "error" && (
+          <div className="result-card max-w-4xl p-7">
+            <p className="eyebrow text-red">Search interrupted</p>
+            <p className="mt-2 text-sm text-white/60">{errorMsg}</p>
+            <button onClick={() => runSearch(inputValue)} className="mt-5 rounded-full bg-red px-5 py-2.5 text-sm font-medium text-white">Try again</button>
+          </div>
+        )}
 
-              {answerDone && (
-                <ResultBlocks blocks={data.blocks} visibleCount={visibleBlocks} />
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="sticky bottom-0 left-0 right-0 border-t border-rule bg-paper/95 backdrop-blur px-5 sm:px-10 py-4">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex flex-wrap gap-2 mb-3">
-            {chips.map((chip) => (
-              <button
-                key={chip}
-                onClick={() => submitQuery(chip)}
-                disabled={isBusy}
-                className="text-[12.5px] text-body border border-rule rounded-full px-3.5 py-1.5 hover:border-amber/60 hover:bg-amber/10 transition-colors disabled:opacity-40"
-              >
-                {chip}
+        {status === "idle" && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-5xl">
+            {DISCOVER.map(([label, text], i) => (
+              <button key={label} onClick={() => submitQuery(text)} className="discover-card text-left group">
+                <span className="text-[16px]  tracking-[0.2em] text-red">{String(i + 1).padStart(2, "0")} / {label}</span>
+                <span className="mt-5 block text-sm text-white/75 group-hover:text-white">{text}</span>
+                <span className="mt-4 block text-white/20 group-hover:text-red transition-colors">↗</span>
               </button>
             ))}
           </div>
+        )}
 
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <input
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask about a wheel size, finish, price, or dealer near you…"
-              disabled={isBusy}
-              className="flex-1 rounded-full bg-panel border border-rule text-heading placeholder:text-muted/70 px-4 py-3 text-[14px] focus:outline-none disabled:opacity-70"
-            />
-            <button
-              type="submit"
-              disabled={isBusy || !inputValue.trim()}
-              className="shrink-0 rounded-full bg-red text-white font-medium px-6 py-3 text-[14px] hover:bg-reddeep transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isBusy ? "Searching…" : "Search"}
-            </button>
-          </form>
-        </div>
+        {data && (status === "streaming" || status === "done") && (
+          <div className="max-w-5xl">
+            <div className="result-hero animate-inkReveal">
+              <div className="flex flex-wrap items-start justify-between gap-5">
+                <div className="max-w-3xl">
+                  <p className="eyebrow">Catalogue intelligence</p>
+                  <h2 className="mt-3 font-display text-3xl sm:text-5xl font-semibold tracking-[-0.035em] text-white">{data.title}</h2>
+                  <p className="mt-3 text-xs font-mono uppercase tracking-[0.16em] text-red">{data.subtitle}</p>
+                </div>
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[9px] font-mono uppercase tracking-[0.16em] text-white/40">AI curated</span>
+              </div>
+              <div className="mt-6 max-w-3xl">
+                <TypewriterText text={data.answer} onDone={handleAnswerDone} className="text-[15px] sm:text-base leading-7 text-white/65" />
+              </div>
+            </div>
+            {answerDone && <div className="mt-8"><ResultBlocks blocks={data.blocks} visibleCount={visibleBlocks} /></div>}
+            <div className="mt-10 max-w-4xl">
+              <div className="search-shell">
+                <form onSubmit={handleSubmit} className="flex items-center gap-2 p-2">
+                  <input value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="Ask a follow-up…" disabled={isBusy} className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none" />
+                  <button type="submit" disabled={isBusy || !inputValue.trim()} className="search-button">Ask <span>↗</span></button>
+                </form>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {chips.map((chip) => <button key={chip} onClick={() => submitQuery(chip)} disabled={isBusy} className="prompt-chip">{chip}</button>)}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }
