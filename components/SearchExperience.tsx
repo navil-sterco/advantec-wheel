@@ -74,27 +74,27 @@ export default function SearchExperience() {
   const chips = status === "done" && data?.suggested_queries?.length ? data.suggested_queries : STARTER_CHIPS;
 
   return (
-    <section className="relative z-10 px-5 sm:px-10 lg:px-14 pb-14">
+    <section className="relative z-10 px-4 pb-12 sm:px-8 sm:pb-14 lg:px-14">
       <div className="mx-auto max-w-7xl">
         {status === "idle" && (
           <div className="mb-8">
             <div className="search-shell max-w-4xl">
-              <form onSubmit={handleSubmit} className="flex items-center gap-3 p-2.5">
-                <div className="pl-4 text-white/35 text-[32px] font-[300]" aria-hidden="true">⌕</div>
+              <form onSubmit={handleSubmit} className="flex min-w-0 items-center gap-1.5 p-2 sm:gap-3 sm:p-2.5">
+                <div className="pl-2 text-[28px] font-[300] text-white/35 sm:pl-4 sm:text-[32px]" aria-hidden="true">⌕</div>
                 <input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder="Ask anything about wheels, fitment, price or dealers…"
                   disabled={isBusy}
-                  className="min-w-0 flex-1 bg-transparent px-1 py-4 text-[15px] sm:text-base text-white placeholder:text-white/30 focus:outline-none"
+                  className="min-w-0 flex-1 bg-transparent px-1 py-3.5 text-sm text-white placeholder:text-white/30 focus:outline-none sm:py-4 sm:text-base"
                 />
                 <button type="submit" disabled={!inputValue.trim()} className="search-button">
-                  <span className="hidden sm:inline">Search catalogue</span><span className="sm:hidden">Search</span>
+                  <span className="hidden whitespace-nowrap sm:inline">Search catalogue</span><span className="sm:hidden">Search</span>
                   <span>↗</span>
                 </button>
               </form>
             </div>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2 sm:mt-4">
               {chips.map((chip) => (
                 <button key={chip} onClick={() => submitQuery(chip)} disabled={isBusy} className="prompt-chip">{chip}</button>
               ))}
@@ -150,7 +150,7 @@ export default function SearchExperience() {
             {answerDone && <div className="mt-8"><ResultBlocks blocks={data.blocks} visibleCount={visibleBlocks} /></div>}
             <div className="mt-10 max-w-4xl">
               <div className="search-shell">
-                <form onSubmit={handleSubmit} className="flex items-center gap-2 p-2">
+                <form onSubmit={handleSubmit} className="flex min-w-0 items-center gap-1 p-1.5 sm:gap-2 sm:p-2">
                   <input value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="Ask a follow-up…" disabled={isBusy} className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none" />
                   <button type="submit" disabled={isBusy || !inputValue.trim()} className="search-button">Ask <span>↗</span></button>
                 </form>

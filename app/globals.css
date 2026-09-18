@@ -91,7 +91,8 @@ body {
   -webkit-background-clip:text; background-clip:text; color:transparent;
 }
 @media (max-width:640px) {
-  .search-button { padding:13px 15px; }
+  .search-button { gap:6px; padding:12px 13px; font-size:12px; }
+  .prompt-chip { padding:8px 11px; font-size:11px; }
   .result-hero { padding:22px; }
 }
 @media (prefers-reduced-motion:reduce) {

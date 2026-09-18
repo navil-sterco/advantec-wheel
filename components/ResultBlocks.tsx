@@ -204,7 +204,7 @@ function BlockRenderer({ block }: { block: ResultBlock }) {
     return (
       <div>
         <SectionLabel>{b.heading}</SectionLabel>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {b.items.map((item, i) => (
             <div key={i} className="panel-card rounded-xl px-4 py-4 flex items-start gap-3">
               <div className="w-6 h-6 rounded-full bg-red text-white flex items-center justify-center text-[11px] font-mono font-semibold shrink-0">
@@ -224,7 +224,7 @@ function BlockRenderer({ block }: { block: ResultBlock }) {
       <div>
         <SectionLabel>{b.heading}</SectionLabel>
         <div className="panel-card rounded-xl px-6 py-6 sm:px-8 sm:py-7">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-6">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 sm:gap-x-6">
             {b.items.map((stat, i) => (
               <div key={i} className="border-t-2 border-amber/70 pt-2.5">
                 <div className="font-display text-2xl sm:text-3xl text-amber font-semibold [text-shadow:0_0_18px_rgba(240,169,78,0.35)]">
@@ -373,7 +373,7 @@ function GenericItems({ items }: { items: unknown[] }) {
   // array of plain strings -> chip grid
   if (typeof first === "string") {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
         {(items as string[]).map((item, i) => (
           <div key={i} className="panel-card rounded-xl px-5 py-5">
             <div className="w-8 h-8 rounded-full bg-cyan/10 border border-cyan/35 flex items-center justify-center text-cyan mb-3">
